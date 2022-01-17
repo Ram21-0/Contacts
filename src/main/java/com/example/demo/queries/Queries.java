@@ -15,7 +15,7 @@ public class Queries {
         String insertIntoContacts =
                 String.format(
                         "insert into %s(contactId,name,email,phoneNo,address,dob,score) " +
-                                "values(%d,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",0);",
+                                "values(%s,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",0);",
                         CONTACTS_TABLE,
                         contact.getContactId(), contact.getName(), contact.getEmail(),
                         contact.getPhoneNo(), contact.getAddress(), "2000-12-12");
@@ -25,7 +25,7 @@ public class Queries {
 
     public static String getInsertIntoRelationQuery(String userId, String contactId) {
         return String.format(
-                "insert into %s(userId,contactId) values(%d,%d);",
+                "insert into %s(userId,contactId) values(%s,%s);",
                 USER_CONTACTS_TABLE, userId, contactId);
     }
 
@@ -35,7 +35,7 @@ public class Queries {
                 String.format(
                         "select * from %s as t1 inner join %s as t2 " +
                                 "on t1.contactId = t2.contactId " +
-                                "and t1.userId=%d;",
+                                "and t1.userId=%s;",
                     USER_CONTACTS_TABLE, CONTACTS_TABLE, userId);
 
         return query;

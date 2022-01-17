@@ -45,13 +45,8 @@ public class ContactRepository implements ContactRepositoryInterface {
     public Contact addContact(Contact contact) {
         String contactId = genID() ;
         contact.setContactId(contactId);
-
-        String query = Queries.getInsertIntoContactsQuery(contact);
-        System.out.println("Executing the query .. " + query);
-
         jdbcTemplate.update(Queries.getInsertIntoContactsQuery(contact));
         jdbcTemplate.update(Queries.getInsertIntoRelationQuery(userId, contactId));
-
         return contact;
 
     }
@@ -76,9 +71,14 @@ public class ContactRepository implements ContactRepositoryInterface {
 
     @Override
     public Contact getContactById(String ContactId) {
-        return jdbcTemplate.queryForObject(Queries.getGetContactsById(ContactId) ,
+
+        Contact contact = jdbcTemplate.queryForObject(Queries.getGetContactsById(ContactId) ,
                 new Object[]{ContactId} ,
                 new BeanPropertyRowMapper<Contact>(Contact.class)) ;
+        contact.increaseScore();
+
+        editContact(contact);
+        return contact ;
     }
 
     @Override

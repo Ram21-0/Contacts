@@ -8,8 +8,7 @@ import java.sql.ResultSet;
 import java.util.*;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+
 public class Contact {
 
     private String contactId;
@@ -19,6 +18,19 @@ public class Contact {
     private String address;
     private int score;
     private Date dob;
+
+    public Contact(){
+    }
+
+    public Contact(String contactId ,String name , String email , String phoneNo ,String address , int score , Date dob){
+        this.contactId = contactId ;
+        this.name =name ;
+        this.email = email ;
+        this.phoneNo =phoneNo ;
+        this.address =address ;
+        this.score= score ;
+        this.dob =dob ;
+    }
 
     public void increaseScore() {
         this.score++;
