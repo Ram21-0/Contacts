@@ -31,9 +31,6 @@ public class Queries {
 
     public static String getGetAllContactsQuery(String userId) {
 
-//        select * from user_contacts join contacts on contacts.contactid=user_contacts.contactId and userid=2;
-//        String table1 = USER_CONTACTS_TABLE, table2 = CONTACTS_TABLE;
-
         String query =
                 String.format(
                         "select * from %s as t1 inner join %s as t2 " +
@@ -47,10 +44,6 @@ public class Queries {
 
 
     public static String getGetContactsByName(String userId,String name) {
-//        String query = "select * from %s where name like \"%s\";";
-//        return String.format(query, CONTACTS_TABLE, name + "%");
-//        explain select * from  ( select t2.* from user_contacts as t1 inner join contacts as t2 on t1.contactId = t2.contactId and t1.userId = 2 ) as t where name = "name10";
-
 
         String query =
                 String.format(
@@ -59,27 +52,39 @@ public class Queries {
                                 "on t1.contactId = t2.contactId and t1.userId = ? " +
                                 ") as t where name like \"?\";",
                         USER_CONTACTS_TABLE, CONTACTS_TABLE);
+        return query;
+    }
 
-//        String table1 = USER_CONTACTS_TABLE, table2 = CONTACTS_TABLE;
+    public static String getGetContactsById(String contactId ) {
 
-//        String query =
-//                String.format("select * from %s as t1 join %s as t2 on t1.contactId=t2.contactId and t1.userId=%d;",
-//                    table1,table2,userId);
+        String query =
+                String.format(
+                        "select * from %s where contactId = ? " ,CONTACTS_TABLE, contactId) ;
 
         return query;
     }
 
-//    public static final String INSERT_CONTACT_QUERY =
-//            String.format("insert into %s(name,email,phoneNo,address,dob) values(?,?,?,?,?);", CONTACTS_TABLE);
-//
-////    public static final String GET_ALL_CONTACTS_QUERY =
-////            String.format("select * from %s;",TABLE_NAME);
-//
-//    public static final String GET_CONTACTS_BY_NAME =
-//            String.format("select * from %s where name like \"%s\"",TABLE_NAME,"%s");
-//
-//    public static final String GET_CONTACTS_BY_FIELD =
-//            String.format("select * from %s where %s like \"%s\"",TABLE_NAME,"%s","%s");
+    public static String getDeleteContactById(String contactId){
+        String query =
+                String.format(
+                        "delete from %s where contactId = ? " ,CONTACTS_TABLE , contactId) ;
+        return query ;
+    }
+
+    public static String getUpdateContact(Contact contact){
+
+        // to be completed
+        String query =
+                String.format(
+                        "UPDATE CONTACTS" +
+                                " SET ..."
+                ) ;
+
+
+        return query;
+    }
+
+
+
 }
 
-//insert into contacts(name,email,phoneNo,address,dob,score) values("sita","sita@flock.com","12345","address","2000-10-25",0);

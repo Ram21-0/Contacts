@@ -7,9 +7,9 @@ import java.util.List;
 public interface ContactRepositoryInterface {
 
     public Contact addContact(Contact contact);
-    public void deleteContact(int id);
-    public void editContact(int id);
+    public void deleteContact(String id);
+    public void editContact(Contact contact);
     public List<Contact> getContactsByName(String name);
     public List<Contact> getAllContacts();
-    public Contact getContactById(int id);
+    public Contact getContactById(String id);
 }
