@@ -14,9 +14,26 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+
 
 @Repository
 public class ContactRepository implements ContactRepositoryInterface {
+    private static final String userId ="1"  ;
+
+    public int getRandomNumber(int min, int max) {
+        Random random = new Random();
+        return random.ints(min, max)
+                .findFirst()
+                .getAsInt();
+    }
+    private String genID(){
+        // tries to generate a truly random ID
+        long contactId = (long) (System.currentTimeMillis() % (1e9));
+        contactId *= getRandomNumber(1 , (int)1e9)  ;
+        return Long.toString(contactId) ;
+    }
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -25,9 +42,7 @@ public class ContactRepository implements ContactRepositoryInterface {
     public Contact addContact(Contact contact) {
 //        KeyHolder holder = new GeneratedKeyHolder();
 
-        int contactId = (int) (System.currentTimeMillis() % (1e9));
-        String.valueOf(System.currentTimeMillis());
-        int userId = 1;
+        String contactId = genID() ;
 
         contact.setContactId(contactId);
 
@@ -98,9 +113,9 @@ public class ContactRepository implements ContactRepositoryInterface {
 
     @Override
     public List<Contact> getAllContacts() {
-        return jdbcTemplate.query(Queries.getGetAllContactsQuery(1),
+        return jdbcTemplate.query(Queries.getGetAllContactsQuery(userId),
                 (result,rowNo) -> new Contact(
-                    result.getInt("contactId"),
+                    result.getString("contactId"),
                     result.getString("name"),
                     result.getString("email"),
                         result.getString("phoneNo"),

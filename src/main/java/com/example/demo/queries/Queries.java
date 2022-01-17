@@ -23,13 +23,13 @@ public class Queries {
         return insertIntoContacts;
     }
 
-    public static String getInsertIntoRelationQuery(int userId, int contactId) {
+    public static String getInsertIntoRelationQuery(String userId, String contactId) {
         return String.format(
                 "insert into %s(userId,contactId) values(%d,%d);",
                 USER_CONTACTS_TABLE, userId, contactId);
     }
 
-    public static String getGetAllContactsQuery(int userId) {
+    public static String getGetAllContactsQuery(String userId) {
 
 //        select * from user_contacts join contacts on contacts.contactid=user_contacts.contactId and userid=2;
 //        String table1 = USER_CONTACTS_TABLE, table2 = CONTACTS_TABLE;
@@ -46,7 +46,7 @@ public class Queries {
 
 
 
-    public static String getGetContactsByName(int userId,String name) {
+    public static String getGetContactsByName(String userId,String name) {
 //        String query = "select * from %s where name like \"%s\";";
 //        return String.format(query, CONTACTS_TABLE, name + "%");
 //        explain select * from  ( select t2.* from user_contacts as t1 inner join contacts as t2 on t1.contactId = t2.contactId and t1.userId = 2 ) as t where name = "name10";
