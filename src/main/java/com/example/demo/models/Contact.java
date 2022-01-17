@@ -1,67 +1,26 @@
 package com.example.demo.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.sql.ResultSet;
 import java.util.*;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Contact {
 
-    int id;
+    private String contactId;
     private String name;
     private String email;
+    private String phoneNo;
+    private String address;
     private int score;
-
-    public Contact(int id, String name, String email, int score) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.score = score;
-    }
-
-    public Contact() {}
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
+    private Date dob;
 
     public void increaseScore() {
         this.score++;
-    }
-
-    @Override
-    public String toString() {
-
-        return "Contact{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", score=" + score +
-                '}';
     }
 }

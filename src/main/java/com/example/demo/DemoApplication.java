@@ -30,4 +30,7 @@ public class DemoApplication {
  	email varchar(20),
  	score int default 0
  );
+
+ create index score_index on contacts(score);
+ create index name_index on contacts(name);
  */
