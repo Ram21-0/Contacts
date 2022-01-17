@@ -12,7 +12,7 @@ import java.util.*;
 @AllArgsConstructor
 public class Contact {
 
-    private String contactId;
+    private int contactId;
     private String name;
     private String email;
     private String phoneNo;
