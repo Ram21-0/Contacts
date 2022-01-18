@@ -10,29 +10,39 @@ import java.util.List;
 @RestController
 public class ContactsController {
 
+    private static final String path = "/contacts";
+
     @Autowired
     ContactRepository repository;
 
-    @GetMapping("/")
+    @GetMapping(path)
     public List<Contact> getAllContacts() {
         return repository.getAllContacts();
     }
 
-    @GetMapping("/{name}")
+    @GetMapping(path + "/{name}")
     public List<Contact> getContact(@PathVariable String name) {
         return repository.getContactsByName(name);
     }
 //
-    @PostMapping("/add")
+    @PostMapping(path + "/add")
     public Contact addContact(@RequestBody Contact contact) {
         return repository.addContact(contact);
-//        return contact;
     }
-//
-////    @PutMapping("/update/{name}")
-//
-//    @PatchMapping("/increaseScore")
-//    public void updateContactScore(@RequestBody Contact contact) {
-//        service.incrementContactScore(contact);
-//    }
+
+    @DeleteMapping(path + "/delete/{contactId}")
+    public boolean deleteContact(@PathVariable String contactId) {
+        repository.deleteContact(contactId);
+        return true;
+    }
+
+    @PutMapping(path + "/update")
+    public Contact updateContact(@RequestBody Contact contact) {
+        return repository.updateContact(contact);
+    }
+
+    @PatchMapping(path + "/increaseScore/{contactId}")
+    public Contact updateContactScore(@PathVariable String contactId) {
+        return repository.getContactById(contactId);
+    }
 }

@@ -5,24 +5,22 @@ import com.example.demo.queries.Queries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-
-
 @Repository
 public class ContactRepository implements ContactRepositoryInterface {
-    // hacky way to maintain userId , need to change this in future
-    private static final String userId ="1"  ;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    // TODO: 18/01/22 RESPONSE AND EXCEPTION HANDLING
+
+
+    // TODO: 18/01/22 hacky way to maintain userId , need to change this in future
+    private static final String userId = "1";
 
     public int getRandomNumber(int min, int max) {
         Random random = new Random();
@@ -31,60 +29,66 @@ public class ContactRepository implements ContactRepositoryInterface {
                 .getAsInt();
     }
 
-    // tries to generate a truly random ID
-    private String genID(){
-        long contactId = (long) (System.currentTimeMillis() % (1e9));
-        contactId *= getRandomNumber(1 , (int)1e9)  ;
-        return Long.toString(contactId) ;
+    // generate ID
+    private String generateID() {
+        long contactId = System.currentTimeMillis();
+//        contactId *= getRandomNumber(1, (int) 1e9);
+        return Long.toString(contactId);
     }
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @Override
     public Contact addContact(Contact contact) {
-        String contactId = genID() ;
+        String contactId = generateID();
         contact.setContactId(contactId);
-        jdbcTemplate.update(Queries.getInsertIntoContactsQuery(contact));
-        jdbcTemplate.update(Queries.getInsertIntoRelationQuery(userId, contactId));
+        
+        jdbcTemplate.update(Queries.getUpsertContactQuery(contact));
+        jdbcTemplate.update(Queries.getInsertIntoRelationQuery(userId,contactId));
+        
         return contact;
-
     }
 
     @Override
     public void deleteContact(String contactId) {
-        jdbcTemplate.update(Queries.getDeleteContactById(contactId));
+        jdbcTemplate.update(Queries.getDeleteContactByIdQuery(contactId));
     }
 
     @Override
-    public void editContact(Contact contact) {
-        String contactId = contact.getContactId() ;
-        jdbcTemplate.update(Queries.getUpdateContact(contact)) ;
+    public Contact updateContact(Contact contact) {
+        jdbcTemplate.update(Queries.getUpsertContactQuery(contact));
+        return contact;
     }
 
     @Override
     public List<Contact> getContactsByName(String name) {
-     return jdbcTemplate.query(Queries.getGetContactsByName(userId ,name),
-            new BeanPropertyRowMapper<Contact>(Contact.class)
-       ) ;
+
+        return jdbcTemplate.query(Queries.getGetContactsByNameQuery(userId, name),
+                new BeanPropertyRowMapper<>(Contact.class)
+        );
     }
 
     @Override
-    public Contact getContactById(String ContactId) {
+    public Contact getContactById(String contactId) {
 
-        Contact contact = jdbcTemplate.queryForObject(Queries.getGetContactsById(ContactId) ,
-                new Object[]{ContactId} ,
-                new BeanPropertyRowMapper<Contact>(Contact.class)) ;
-        contact.increaseScore();
+        jdbcTemplate.update(Queries.getIncrementContactScoreQuery(contactId));
 
-        editContact(contact);
-        return contact ;
+        List<Contact> contactList = jdbcTemplate.query(Queries.getGetContactByIdQuery(userId,contactId),
+                new BeanPropertyRowMapper<>(Contact.class));
+
+        return contactList.get(0);
+
+//        Contact contact = jdbcTemplate.queryForObject(Queries.getGetContactByIdQuery(userId, contactId),
+//                new Object[] { contactId },
+//                new BeanPropertyRowMapper<>(Contact.class));
+//        contact.increaseScore();
+
+//        updateContact(contact);
+//        return contact;
     }
 
     @Override
     public List<Contact> getAllContacts() {
-        return jdbcTemplate.query(Queries.getGetAllContactsQuery(userId),
-            new BeanPropertyRowMapper<Contact>(Contact.class)
-        ) ;
+        return jdbcTemplate.query(Queries.getGetAllContactsSortedByNameQuery(userId),
+                new BeanPropertyRowMapper<>(Contact.class)
+        );
     }
 }

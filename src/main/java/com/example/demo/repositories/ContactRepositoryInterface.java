@@ -8,7 +8,7 @@ public interface ContactRepositoryInterface {
 
     public Contact addContact(Contact contact);
     public void deleteContact(String id);
-    public void editContact(Contact contact);
+    public Contact updateContact(Contact contact);
     public List<Contact> getContactsByName(String name);
     public List<Contact> getAllContacts();
     public Contact getContactById(String id);

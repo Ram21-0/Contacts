@@ -2,26 +2,21 @@ package com.example.demo.queries;
 
 import com.example.demo.models.Contact;
 
-import java.util.Locale;
-import java.util.Map;
-
 public class Queries {
 
     public static final String CONTACTS_TABLE = "contacts";
     public static final String USER_TABLE = "users";
     private static final String USER_CONTACTS_TABLE = "user_contacts";
 
-    public static String getInsertIntoContactsQuery(Contact contact) {
-        String insertIntoContacts =
-                String.format(
-                        "insert into %s(contactId,name,email,phoneNo,address,dob,score) " +
-                                "values(%s,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",0);",
-                        CONTACTS_TABLE,
-                        contact.getContactId(), contact.getName(), contact.getEmail(),
-                        contact.getPhoneNo(), contact.getAddress(), "2000-12-12");
-
-        return insertIntoContacts;
-    }
+//    public static String getInsertIntoContactsQuery(Contact contact) {
+//
+//        return String.format(
+//                "insert into %s(contactId,name,email,phoneNo,address,dob,score) " +
+//                        "values(%s,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",0);",
+//                CONTACTS_TABLE,
+//                contact.getContactId(), contact.getName(), contact.getEmail(),
+//                contact.getPhoneNo(), contact.getAddress(), "2000-12-12");
+//    }
 
     public static String getInsertIntoRelationQuery(String userId, String contactId) {
         return String.format(
@@ -31,59 +26,77 @@ public class Queries {
 
     public static String getGetAllContactsQuery(String userId) {
 
-        String query =
-                String.format(
-                        "select * from %s as t1 inner join %s as t2 " +
-                                "on t1.contactId = t2.contactId " +
-                                "and t1.userId=%s;",
-                    USER_CONTACTS_TABLE, CONTACTS_TABLE, userId);
+        return String.format(
+                "select * from %s as t1 inner join %s as t2 " +
+                        "on t1.contactId = t2.contactId " +
+                        "and t1.userId=%s",
+                USER_CONTACTS_TABLE, CONTACTS_TABLE, userId);
+    }
 
+    public static String getGetAllContactsSortedByNameQuery(String userId) {
+        String query = Queries.getGetAllContactsQuery(userId) + " order by name;";
+        System.out.println(query);
         return query;
     }
 
+    public static String getGetAllContactsSortedByScoreQuery(String userId) {
+        return Queries.getGetAllContactsQuery(userId) + "order by score desc, name;";
+    }
 
-
-    public static String getGetContactsByName(String userId,String name) {
+    public static String getGetContactsByNameQuery(String userId, String name) {
 
         String query =
                 String.format(
                         "select * from ( " +
                                 "select t2.* from %s as t1 inner join %s as t2 " +
-                                "on t1.contactId = t2.contactId and t1.userId = ? " +
-                                ") as t where name like \"?\";",
-                        USER_CONTACTS_TABLE, CONTACTS_TABLE);
+                                "on t1.contactId = t2.contactId and t1.userId = \"%s\" " +
+                                ") as t where name like \"%s\" " +
+                                "order by score desc, name;",
+                        USER_CONTACTS_TABLE, CONTACTS_TABLE,
+                        userId, name + "%");
+//        System.out.println(query);
         return query;
     }
 
-    public static String getGetContactsById(String contactId ) {
+    public static String getGetContactByIdQuery(String userId, String contactId) {
 
         String query =
                 String.format(
-                        "select * from %s where contactId = ? " ,CONTACTS_TABLE, contactId) ;
+                        "select * from ( " +
+                                "select t2.* from %s as t1 inner join %s as t2 " +
+                                "on t1.contactId = t2.contactId and t1.userId = \"%s\" " +
+                                ") as t where contactId = \"%s\";",
+                        USER_CONTACTS_TABLE, CONTACTS_TABLE,
+                        userId, contactId);
 
+        System.out.println(query);
         return query;
     }
 
-    public static String getDeleteContactById(String contactId){
-        String query =
-                String.format(
-                        "delete from %s where contactId = ? " ,CONTACTS_TABLE , contactId) ;
-        return query ;
+    public static String getDeleteContactByIdQuery(String contactId) {
+        return String.format(
+                "delete from %s where contactId = \"%s\";",
+                CONTACTS_TABLE,
+                contactId);
     }
 
-    public static String getUpdateContact(Contact contact){
+    public static String getUpsertContactQuery(Contact contact) {
 
-        // to be completed
-        String query =
-                String.format(
-                        "UPDATE CONTACTS" +
-                                " SET ..."
-                ) ;
-
-
-        return query;
+        return String.format(
+                "replace into %s(contactId,name,email,phoneNo,address,dob,score) " +
+                        "values(%s,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",0);",
+                CONTACTS_TABLE,
+                contact.getContactId(), contact.getName(), contact.getEmail(),
+                contact.getPhoneNo(), contact.getAddress(), "2000-12-12");
     }
 
+    public static String getIncrementContactScoreQuery(String contactId) {
+        return String.format(
+                "update %s " +
+                        "set score = score + 1 " +
+                        "where contactId = %s;",
+                CONTACTS_TABLE, contactId);
+    }
 
 
 }
