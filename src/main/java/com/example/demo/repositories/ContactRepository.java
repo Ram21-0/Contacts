@@ -18,7 +18,6 @@ public class ContactRepository implements ContactRepositoryInterface {
 
     // TODO: 18/01/22 RESPONSE AND EXCEPTION HANDLING
 
-
     // TODO: 18/01/22 hacky way to maintain userId , need to change this in future
     private static final String userId = "1";
 
@@ -54,7 +53,9 @@ public class ContactRepository implements ContactRepositoryInterface {
 
     @Override
     public Contact updateContact(Contact contact) {
+        System.out.println(Queries.getUpsertContactQuery(contact));
         jdbcTemplate.update(Queries.getUpsertContactQuery(contact));
+        jdbcTemplate.update(Queries.getInsertIntoRelationQuery(userId,contact.getContactId()));
         return contact;
     }
 

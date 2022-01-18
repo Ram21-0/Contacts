@@ -84,10 +84,10 @@ public class Queries {
 
         return String.format(
                 "replace into %s(contactId,name,email,phoneNo,address,dob,score) " +
-                        "values(%s,\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",0);",
+                        "values(\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%d);",
                 CONTACTS_TABLE,
                 contact.getContactId(), contact.getName(), contact.getEmail(),
-                contact.getPhoneNo(), contact.getAddress(), "2000-12-12");
+                contact.getPhoneNo(), contact.getAddress(), "2000-12-12", contact.getScore());
     }
 
     public static String getIncrementContactScoreQuery(String contactId) {
