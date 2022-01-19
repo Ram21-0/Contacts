@@ -24,9 +24,8 @@ public class UserRepository implements UserRepositoryInterface {
     @Override
     public User addUser(User user) {
 
-        //jdbcTemplate.update(Queries.getUpsertContactQuery(contact));
+        System.out.println(Queries.getUpsertUserQuery(user));
         jdbcTemplate.update(Queries.getUpsertUserQuery(user)) ;
-
 
         return user;
     }
@@ -34,6 +33,7 @@ public class UserRepository implements UserRepositoryInterface {
 
     @Override
     public User updateUser(User user) {
+        System.out.println(Queries.getUpdateUserQuery(user));
         jdbcTemplate.update(Queries.getUpdateUserQuery(user));
         return user;
     }

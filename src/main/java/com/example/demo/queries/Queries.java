@@ -42,13 +42,12 @@ public class Queries {
 
     public static String getGetContactByIdQuery(String userId, String contactId) {
 
-        String query =
-                String.format(
+        return String.format(
                         "select * from %s " +
                                 " where contactId = \"%s\" and userId = \"%s\" ;",
                         CONTACTS_TABLE, contactId, userId);
 
-        return query;
+
     }
 
     public static String getDeleteContactByIdQuery(String contactId) {
@@ -97,10 +96,14 @@ public class Queries {
 
         return String.format(
                 "update %s set %s = \"%s\", %s = \"%s\"," +
-                        "where userId = %s;",
+                        "%s = \"%s\", %s = \"%s\", %s = \"%s\"" +
+                        " where userId = \"%s\";",
                 USER_TABLE,
-                "password" , user.getPassword() ,
                 "name" , user.getName() ,
+                "password" , user.getPassword() ,
+                "phoneNo" , user.getPhoneNo() ,
+                "address" , user.getAddress() ,
+                "dob" ,user.getDob() ,
                 user.getUserId()
         );
     }
@@ -108,10 +111,11 @@ public class Queries {
     public static String getUpsertUserQuery(User user) {
 
         return String.format(
-                "replace into %s(userId,password , name) " +
-                        "values(\"%s\",\"%s\",\"%s\");",
-                CONTACTS_TABLE,
-                user.getUserId(),user.getPassword(), user.getName()
+                "replace into %s(userId,password , name,phoneNo ,address ,dob) " +
+                        "values(\"%s\",\"%s\",\"%s\", \"%s\",\"%s\",\"%s\");",
+                USER_TABLE,
+                user.getUserId(),user.getPassword(), user.getName() ,user.getPhoneNo(),
+                user.getAddress(),user.getDob()
         );
     }
 
