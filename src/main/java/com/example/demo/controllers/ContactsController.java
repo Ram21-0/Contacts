@@ -42,7 +42,7 @@ public class ContactsController {
         return repository.updateContact(contact);
     }
 
-    @PatchMapping(path + "/increaseScore/{contactId}")
+    @PatchMapping(path + "/getcontact/{contactId}")
     public Contact updateContactScore(@PathVariable String contactId) {
         return repository.getContactById(contactId);
     }

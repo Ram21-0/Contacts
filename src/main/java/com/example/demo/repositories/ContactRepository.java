@@ -5,8 +5,12 @@ import com.example.demo.queries.Queries;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Random;
 
@@ -21,27 +25,21 @@ public class ContactRepository implements ContactRepositoryInterface {
     // TODO: 18/01/22 hacky way to maintain userId , need to change this in future
     private static final String userId = "1";
 
-    public int getRandomNumber(int min, int max) {
-        Random random = new Random();
-        return random.ints(min, max)
-                .findFirst()
-                .getAsInt();
-    }
-
-    // generate ID
-    private String generateID() {
-        long contactId = System.currentTimeMillis();
-//        contactId *= getRandomNumber(1, (int) 1e9);
-        return Long.toString(contactId);
-    }
 
     @Override
     public Contact addContact(Contact contact) {
-        String contactId = generateID();
-        contact.setContactId(contactId);
         
-        jdbcTemplate.update(Queries.getUpsertContactQuery(contact));
-        jdbcTemplate.update(Queries.getInsertIntoRelationQuery(userId,contactId));
+        //jdbcTemplate.update(Queries.getUpsertContactQuery(contact));
+        KeyHolder holder = new GeneratedKeyHolder();
+        jdbcTemplate.update(con -> {
+            PreparedStatement statement =
+                    con.prepareStatement(Queries.getUpsertContactQuery(contact), Statement.RETURN_GENERATED_KEYS);
+            return statement;
+        }, holder);
+
+        System.out.println(holder.getKey().intValue());
+        contact.setContactId(holder.getKey().intValue());
+        // TODO: find a way to get id
         
         return contact;
     }
@@ -53,9 +51,9 @@ public class ContactRepository implements ContactRepositoryInterface {
 
     @Override
     public Contact updateContact(Contact contact) {
-        System.out.println(Queries.getUpsertContactQuery(contact));
-        jdbcTemplate.update(Queries.getUpsertContactQuery(contact));
-        jdbcTemplate.update(Queries.getInsertIntoRelationQuery(userId,contact.getContactId()));
+        System.out.println(Queries.getUpdateContactQuery(contact));
+        jdbcTemplate.update(Queries.getUpdateContactQuery(contact));
+
         return contact;
     }
 
@@ -71,19 +69,12 @@ public class ContactRepository implements ContactRepositoryInterface {
     public Contact getContactById(String contactId) {
 
         jdbcTemplate.update(Queries.getIncrementContactScoreQuery(contactId));
-
+        System.out.println(Queries.getIncrementContactScoreQuery(contactId));
+        System.out.println(Queries.getGetContactByIdQuery(userId, contactId));
         List<Contact> contactList = jdbcTemplate.query(Queries.getGetContactByIdQuery(userId,contactId),
                 new BeanPropertyRowMapper<>(Contact.class));
 
         return contactList.get(0);
-
-//        Contact contact = jdbcTemplate.queryForObject(Queries.getGetContactByIdQuery(userId, contactId),
-//                new Object[] { contactId },
-//                new BeanPropertyRowMapper<>(Contact.class));
-//        contact.increaseScore();
-
-//        updateContact(contact);
-//        return contact;
     }
 
     @Override
