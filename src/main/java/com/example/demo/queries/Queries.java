@@ -43,6 +43,9 @@ public class Queries {
         return Queries.getGetAllContactsQuery(userId) + "order by score desc, name;";
     }
 
+//    select t2.* from %s as t1 inner join %s as t2
+//    on t1.contactId = t2.contactId and t1.userId = \"%s\" AND NAME = "GG";
+
     public static String getGetContactsByNameQuery(String userId, String name) {
 
         String query =

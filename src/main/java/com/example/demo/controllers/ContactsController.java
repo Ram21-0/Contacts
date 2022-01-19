@@ -15,6 +15,7 @@ public class ContactsController {
     @Autowired
     ContactRepository repository;
 
+    @CrossOrigin("http://localhost:3000")
     @GetMapping(path)
     public List<Contact> getAllContacts() {
         return repository.getAllContacts();
