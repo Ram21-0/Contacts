@@ -1,6 +1,7 @@
 package com.example.demo.queries;
 
 import com.example.demo.models.Contact;
+import com.example.demo.models.User;
 
 public class Queries {
 
@@ -90,6 +91,28 @@ public class Queries {
                         "set score = score + 1 " +
                         "where contactId = %s;",
                 CONTACTS_TABLE, contactId);
+    }
+
+    public static String getUpdateUserQuery(User user) {
+
+        return String.format(
+                "update %s set %s = \"%s\", %s = \"%s\"," +
+                        "where userId = %s;",
+                USER_TABLE,
+                "password" , user.getPassword() ,
+                "name" , user.getName() ,
+                user.getUserId()
+        );
+    }
+
+    public static String getUpsertUserQuery(User user) {
+
+        return String.format(
+                "replace into %s(userId,password , name) " +
+                        "values(\"%s\",\"%s\",\"%s\");",
+                CONTACTS_TABLE,
+                user.getUserId(),user.getPassword(), user.getName()
+        );
     }
 
 
