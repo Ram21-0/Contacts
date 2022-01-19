@@ -25,7 +25,8 @@ public class ContactsController {
     public List<Contact> getContact(@PathVariable String name) {
         return repository.getContactsByName(name);
     }
-//
+
+    //
     @PostMapping(path + "/add")
     public Contact addContact(@RequestBody Contact contact) {
         return repository.addContact(contact);

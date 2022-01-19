@@ -11,7 +11,7 @@ import java.util.*;
 @AllArgsConstructor
 @ToString
 public class Contact {
-    private String userId ;
+    private String userId;
     private int contactId;
     private String name;
     private String email;
@@ -19,6 +19,6 @@ public class Contact {
     private String address;
     private int score;
     private Date dob;
-    private Timestamp created_at  ;
+    private Timestamp created_at;
     private Timestamp modified_at;
 }
