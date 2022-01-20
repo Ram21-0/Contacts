@@ -30,6 +30,7 @@ public class ContactRepository implements ContactRepositoryInterface {
     public Contact addContact(Contact contact) {
         
         //jdbcTemplate.update(Queries.getUpsertContactQuery(contact));
+        System.out.println(Queries.getUpsertContactQuery(contact));
         KeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement statement =
@@ -58,7 +59,7 @@ public class ContactRepository implements ContactRepositoryInterface {
     }
 
     @Override
-    public List<Contact> getContactsByName(String name) {
+    public List<Contact> getContactsByName(String name,String userId) {
 
         return jdbcTemplate.query(Queries.getGetContactsByNameQuery(userId, name),
                 new BeanPropertyRowMapper<>(Contact.class)
@@ -66,7 +67,7 @@ public class ContactRepository implements ContactRepositoryInterface {
     }
 
     @Override
-    public Contact getContactById(String contactId) {
+    public Contact getContactById(String contactId,String userId) {
 
         jdbcTemplate.update(Queries.getIncrementContactScoreQuery(contactId));
         System.out.println(Queries.getIncrementContactScoreQuery(contactId));
@@ -78,7 +79,7 @@ public class ContactRepository implements ContactRepositoryInterface {
     }
 
     @Override
-    public List<Contact> getAllContacts() {
+    public List<Contact> getAllContacts(String userId) {
         return jdbcTemplate.query(Queries.getGetAllContactsSortedByNameQuery(userId),
                 new BeanPropertyRowMapper<>(Contact.class)
         );

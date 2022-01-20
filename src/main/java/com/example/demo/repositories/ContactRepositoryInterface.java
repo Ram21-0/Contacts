@@ -12,9 +12,9 @@ public interface ContactRepositoryInterface {
 
     public Contact updateContact(Contact contact);
 
-    public List<Contact> getContactsByName(String name);
+    public List<Contact> getContactsByName(String name,String userId);
 
-    public List<Contact> getAllContacts();
+    public List<Contact> getAllContacts(String userId);
 
-    public Contact getContactById(String id);
+    public Contact getContactById(String contactId,String userId);
 }

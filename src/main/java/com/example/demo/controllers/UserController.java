@@ -33,16 +33,19 @@ public class UserController {
     @Autowired
     UserRepository repository;
 
-    @PostMapping(path + "/add")
+    @CrossOrigin()
+    @PostMapping("/register")
     public User addUser(@RequestBody User user) {
         return repository.addUser(user);
     }
 
-    @PutMapping(path + "/update")
+    @CrossOrigin()
+    @PutMapping("/updateUserDetails")
     public User updateUser(@RequestBody User user) {
         return repository.updateUser(user);
     }
 
+    @CrossOrigin()
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody AuthRequest request) throws Exception {
 
