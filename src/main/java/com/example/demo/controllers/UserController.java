@@ -35,14 +35,16 @@ public class UserController {
 
     @CrossOrigin()
     @PostMapping("/register")
-    public User addUser(@RequestBody User user) {
-        return repository.addUser(user);
+    public ResponseEntity<?> addUser(@RequestBody User user) throws Exception {
+        repository.addUser(user);
+        return authenticate(AuthRequest.valueOf(user));
     }
 
     @CrossOrigin()
     @PutMapping("/updateUserDetails")
     public User updateUser(@RequestBody User user) {
         return repository.updateUser(user);
+//        return authenticate(AuthRequest.valueOf(user));
     }
 
     @CrossOrigin()
@@ -70,8 +72,9 @@ public class UserController {
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUserId());
         System.out.println(userDetails);
+
         final String jwt = jwtUtil.generateToken(userDetails);
         System.out.println("jwt" + jwt);
-        return ResponseEntity.ok(new AuthResponse(jwt));
+        return ResponseEntity.ok(new AuthResponse(jwt, repository.getUserById(request.getUserId())));
     }
 }
