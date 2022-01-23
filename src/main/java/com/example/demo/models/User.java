@@ -18,4 +18,13 @@ public class User {
     private Date dob;
     private Timestamp created_at;
     private Timestamp modified_at;
+
+    public User(User user) {
+        this.userId = user.getUserId();
+        this.password = user.getPassword();
+        this.name = user.getName();
+        this.dob = user.getDob();
+        this.phoneNo = user.getPhoneNo();
+        this.address = user.getAddress();
+    }
 }

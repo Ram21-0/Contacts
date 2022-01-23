@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,10 +34,16 @@ public class UserController {
     @Autowired
     UserRepository repository;
 
+//    @Autowired
+//    PasswordEncoder passwordEncoder;
+
     @CrossOrigin()
     @PostMapping("/register")
     public ResponseEntity<?> addUser(@RequestBody User user) throws Exception {
-        repository.addUser(user);
+//        repository.addUser(user);
+        System.out.println("user at controller " + user);
+        User newUser = new User(user);
+        userDetailsService.registerNewUser(newUser);
         return authenticate(AuthRequest.valueOf(user));
     }
 
@@ -62,6 +69,7 @@ public class UserController {
         }
         catch (BadCredentialsException exception) {
             System.out.println("catch");
+            exception.printStackTrace();
             throw new Exception("Invalid credentials",exception);
         }
         catch (Exception e) {

@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
@@ -22,8 +24,12 @@ public class UserRepository implements UserRepositoryInterface {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+//    @Autowired
+//    PasswordEncoder passwordEncoder;
+
     @Override
     public User addUser(User user) {
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         System.out.println(Queries.getUpsertUserQuery(user));
         jdbcTemplate.update(Queries.getUpsertUserQuery(user));
         return user;
