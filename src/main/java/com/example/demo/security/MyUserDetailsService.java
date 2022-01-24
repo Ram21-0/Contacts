@@ -1,5 +1,6 @@
 package com.example.demo.security;
 
+import com.example.demo.exceptions.UserAlreadyExistsException;
 import com.example.demo.models.User;
 import com.example.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class MyUserDetailsService implements UserDetailsService {
     public boolean registerNewUser(User newUser) throws Exception {
         User user = userRepository.getUserById(newUser.getUserId());
         if(user != null) {
-            throw new Exception("User already exists");
+            throw new UserAlreadyExistsException();
         }
 //        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         userRepository.addUser(newUser);

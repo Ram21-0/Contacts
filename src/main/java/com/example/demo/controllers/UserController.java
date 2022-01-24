@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.exceptions.UserAlreadyExistsException;
 import com.example.demo.models.User;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.security.AuthRequest;
@@ -7,6 +8,7 @@ import com.example.demo.security.AuthResponse;
 import com.example.demo.security.JWTUtil;
 import com.example.demo.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,12 +41,21 @@ public class UserController {
 
     @CrossOrigin()
     @PostMapping("/register")
-    public ResponseEntity<?> addUser(@RequestBody User user) throws Exception {
+    public ResponseEntity<?> addUser(@RequestBody User user) {
 //        repository.addUser(user);
         System.out.println("user at controller " + user);
         User newUser = new User(user);
-        userDetailsService.registerNewUser(newUser);
-        return authenticate(AuthRequest.valueOf(user));
+        try {
+            userDetailsService.registerNewUser(newUser);
+            return authenticate(AuthRequest.valueOf(user));
+        }
+        catch (UserAlreadyExistsException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred");
+        }
     }
 
     @CrossOrigin()
@@ -70,11 +81,14 @@ public class UserController {
         catch (BadCredentialsException exception) {
             System.out.println("catch");
             exception.printStackTrace();
-            throw new Exception("Invalid credentials",exception);
+            System.out.println(ResponseEntity.badRequest().body("Invalid credentials"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+//            throw exception;
         }
         catch (Exception e) {
             e.printStackTrace();
-            throw new Exception(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred");
+//            throw e;
         }
 
 

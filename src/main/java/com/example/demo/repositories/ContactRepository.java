@@ -22,10 +22,6 @@ public class ContactRepository implements ContactRepositoryInterface {
 
     // TODO: 18/01/22 RESPONSE AND EXCEPTION HANDLING
 
-    // TODO: 18/01/22 hacky way to maintain userId , need to change this in future
-    private static final String userId = "ram@flock.com";
-
-
     @Override
     public Contact addContact(Contact contact) {
         
