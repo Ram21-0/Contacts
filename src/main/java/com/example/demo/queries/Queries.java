@@ -18,7 +18,7 @@ public class Queries {
 
     public static String getGetAllContactsSortedByNameQuery(String userId) {
         String query = Queries.getGetAllContactsQuery(userId) + " order by name;";
-        System.out.println(query);
+//        System.out.println(query);
         return query;
     }
 
@@ -34,18 +34,22 @@ public class Queries {
                         "and name like \"%s\" " +
                                 "order by score desc, name;",
                         name + "%");
-        System.out.println(query);
+//        System.out.println(query);
         return query;
     }
 
     public static String getGetContactByIdQuery(String userId, String contactId) {
-
         return String.format(
                 "select * from %s " +
                         " where contactId = \"%s\" and userId = \"%s\" ;",
                 CONTACTS_TABLE, contactId, userId);
+    }
 
-
+    public static String getGetContactByEmailQuery(String userId, String email) {
+        return String.format(
+                "select * from %s " +
+                        " where email = \"%s\" and userId = \"%s\" ;",
+                CONTACTS_TABLE, email, userId);
     }
 
     public static String getDeleteContactByIdQuery(String contactId) {
@@ -70,6 +74,16 @@ public class Queries {
                 "dob", contact.getDob(),
                 contact.getContactId()
         );
+    }
+
+    public static String getInsertContactQuery(Contact contact) {
+
+        return String.format(
+                "insert into %s(userId,contactId,name,email,phoneNo,address,dob,score) " +
+                        "values(\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%d);",
+                CONTACTS_TABLE,
+                contact.getUserId(), contact.getContactId(), contact.getName(), contact.getEmail(),
+                contact.getPhoneNo(), contact.getAddress(), contact.getDob(), contact.getScore());
     }
 
     public static String getUpsertContactQuery(Contact contact) {
@@ -124,7 +138,7 @@ public class Queries {
                 USER_TABLE, userId
         );
 
-        System.out.println(query);
+//        System.out.println(query);
         return query;
     }
 
