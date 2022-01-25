@@ -1,9 +1,13 @@
 package com.example.demo.controllers;
 
+import com.example.demo.exceptions.ContactAlreadyExistsException;
+import com.example.demo.exceptions.UserAlreadyExistsException;
 import com.example.demo.models.Contact;
 import com.example.demo.repositories.ContactRepository;
 import com.example.demo.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,8 +40,18 @@ public class ContactsController {
 
     @CrossOrigin()
     @PostMapping(path + "/add")
-    public Contact addContact(@RequestBody Contact contact) {
-        return repository.addContact(contact);
+    public ResponseEntity<?> addContact(@RequestBody Contact contact) {
+
+        try {
+            return ResponseEntity.ok().body(repository.addContact(contact));
+        } catch (ContactAlreadyExistsException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getLocalizedMessage());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred");
+        }
     }
 
     @CrossOrigin()
@@ -49,8 +63,16 @@ public class ContactsController {
 
     @CrossOrigin()
     @PutMapping(path + "/update")
-    public Contact updateContact(@RequestBody Contact contact) {
-        return repository.updateContact(contact);
+    public ResponseEntity<?> updateContact(@RequestBody Contact contact) {
+        try {
+            return ResponseEntity.ok().body(repository.updateContact(contact));
+        } catch (ContactAlreadyExistsException e) {
+//            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getLocalizedMessage());
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("An error occurred");
+        }
     }
 
     @CrossOrigin()

@@ -1,5 +1,6 @@
 package com.example.demo.repositories;
 
+import com.example.demo.exceptions.ContactAlreadyExistsException;
 import com.example.demo.models.Contact;
 import com.example.demo.queries.Queries;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,69 +13,71 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 
 @Repository
-public class ContactRepository implements ContactRepositoryInterface {
+public class ContactRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // TODO: 18/01/22 RESPONSE AND EXCEPTION HANDLING
+    public Contact addContact(Contact contact) throws Exception {
 
-    @Override
-    public Contact addContact(Contact contact) {
-        
-        //jdbcTemplate.update(Queries.getUpsertContactQuery(contact));
-        System.out.println(Queries.getUpsertContactQuery(contact));
+        Optional<Contact> contactByEmail = getContactByEmail(contact.getUserId(), contact.getEmail());
+        if(contactByEmail.isPresent()) {
+            throw new ContactAlreadyExistsException();
+        }
+
         KeyHolder holder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement statement =
-                    con.prepareStatement(Queries.getUpsertContactQuery(contact), Statement.RETURN_GENERATED_KEYS);
+                    con.prepareStatement(Queries.getInsertContactQuery(contact), Statement.RETURN_GENERATED_KEYS);
             return statement;
         }, holder);
 
         System.out.println(holder.getKey().intValue());
         contact.setContactId(holder.getKey().intValue());
-        // TODO: find a way to get id
-        
         return contact;
     }
 
-    @Override
     public void deleteContact(String contactId) {
         jdbcTemplate.update(Queries.getDeleteContactByIdQuery(contactId));
     }
 
-    @Override
-    public Contact updateContact(Contact contact) {
-        System.out.println(Queries.getUpdateContactQuery(contact));
+    public Contact updateContact(Contact contact) throws ContactAlreadyExistsException {
+        Optional<Contact> contactByEmail = getContactByEmail(contact.getUserId(), contact.getEmail());
+        if(contactByEmail.isPresent()
+                && contactByEmail.get().getContactId() != contact.getContactId()) {
+            throw new ContactAlreadyExistsException();
+        }
+
         jdbcTemplate.update(Queries.getUpdateContactQuery(contact));
 
         return contact;
     }
 
-    @Override
     public List<Contact> getContactsByName(String name,String userId) {
-
         return jdbcTemplate.query(Queries.getGetContactsByNameQuery(userId, name),
                 new BeanPropertyRowMapper<>(Contact.class)
         );
     }
 
-    @Override
-    public Contact getContactById(String contactId,String userId) {
+    public Optional<Contact> getContactByEmail(String userId, String email) {
+        List<Contact> list = jdbcTemplate.query(Queries.getGetContactByEmailQuery(userId, email),
+                new BeanPropertyRowMapper<>(Contact.class));
 
+        if(list.isEmpty()) return Optional.empty();
+        return Optional.of(list.get(0));
+    }
+
+    public Contact getContactById(String contactId,String userId) {
         jdbcTemplate.update(Queries.getIncrementContactScoreQuery(contactId));
-        System.out.println(Queries.getIncrementContactScoreQuery(contactId));
-        System.out.println(Queries.getGetContactByIdQuery(userId, contactId));
         List<Contact> contactList = jdbcTemplate.query(Queries.getGetContactByIdQuery(userId,contactId),
                 new BeanPropertyRowMapper<>(Contact.class));
 
         return contactList.get(0);
     }
 
-    @Override
     public List<Contact> getAllContacts(String userId) {
         return jdbcTemplate.query(Queries.getGetAllContactsSortedByNameQuery(userId),
                 new BeanPropertyRowMapper<>(Contact.class)

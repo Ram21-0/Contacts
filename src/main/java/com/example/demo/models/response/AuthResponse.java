@@ -1,4 +1,4 @@
-package com.example.demo.security;
+package com.example.demo.models.response;
 
 import com.example.demo.models.User;
 import lombok.Getter;
